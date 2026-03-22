@@ -75,7 +75,9 @@ def run(url, query):
             cache_key = (tc.function.name, json.dumps(fn_args, sort_keys=True))
             if cache_key not in result_cache:
                 result_cache[cache_key] = TOOLS[tc.function.name](**fn_args)
-            messages.append({"role": "tool", "tool_call_id": tc.id, "content": result_cache[cache_key]})
+            tool_result = result_cache[cache_key]
+            print(f"[TOOL] {tc.function.name} returned {len(tool_result)} chars: {tool_result[:200]}")
+            messages.append({"role": "tool", "tool_call_id": tc.id, "content": tool_result})
 
 with gr.Blocks(title="AI Assistant") as app:
     gr.Markdown("## 🤖 AI Assistant  —  video · math · weather")
