@@ -2,20 +2,23 @@ from mcp.server.fastmcp import FastMCP
 import requests, re, os
 
 mcp = FastMCP("tools")
-print(f"[ENV] SUPADATA_API_KEY present: {'SUPADATA_API_KEY' in os.environ}")
+
 @mcp.tool()
 def get_transcript(url: str) -> str:
     """Get YouTube video transcript via Supadata API (cloud-friendly)."""
     # Supadata fetches YouTube transcripts server-side — no IP ban issues.
     # Get a free API key at supadata.ai and add SUPADATA_API_KEY to Railway Variables.
+    key = os.environ.get("SUPADATA_API_KEY", "")
+    print(f"[SUPADATA] key present: {bool(key)}, key prefix: {key[:8] if key else 'EMPTY'}")
+
     resp = requests.get(
-        "https://api.supadata.ai/v1",
+        "https://api.supadata.ai/v1/youtube/transcript",
         params={"url": url, "text": True},
-        headers={"x-api-key": os.environ.get("SUPADATA_API_KEY", "")},
+        headers={"x-api-key": key},
         timeout=15,
     )
     data = resp.json()
-    print(f"[SUPADATA] status={resp.status_code} response={data}")  # debug
+    print(f"[SUPADATA] status={resp.status_code} response={data}")
     if not resp.ok or "content" not in data:
         return f"Transcript error: {data}"
     return data["content"]
