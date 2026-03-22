@@ -1,24 +1,23 @@
 from mcp.server.fastmcp import FastMCP
-from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api.proxies import GenericProxyConfig
 import requests, re, os
 
 mcp = FastMCP("tools")
 
 @mcp.tool()
 def get_transcript(url: str) -> str:
-    """Get YouTube video transcript."""
-    vid = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11})", url).group(1)
-
-    # proxy config — required when running on cloud servers (Railway, Render, etc.)
-    # YouTube blocks all cloud IPs; a residential proxy bypasses this.
-    # Sign up at webshare.io (free tier) and add PROXY_URL to Railway Variables.
-    # Format: http://username:password@proxy.webshare.io:80
-    proxy_url = os.environ.get("PROXY_URL")
-    proxy_config = GenericProxyConfig(proxy_url) if proxy_url else None
-
-    api = YouTubeTranscriptApi(proxy_config=proxy_config)
-    return " ".join(s.text for s in api.fetch(vid))
+    """Get YouTube video transcript via Supadata API (cloud-friendly)."""
+    # Supadata fetches YouTube transcripts server-side — no IP ban issues.
+    # Get a free API key at supadata.ai and add SUPADATA_API_KEY to Railway Variables.
+    resp = requests.get(
+        "https://api.supadata.ai/v1/youtube/transcript",
+        params={"url": url, "text": True},
+        headers={"x-api-key": os.environ.get("SUPADATA_API_KEY", "")},
+        timeout=15,
+    )
+    data = resp.json()
+    if not resp.ok or "content" not in data:
+        return f"Could not fetch transcript: {data.get('error', resp.status_code)}"
+    return data["content"]
 
 @mcp.tool()
 def calculate(expression: str) -> str:
