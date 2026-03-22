@@ -60,7 +60,7 @@ def run(url, query):
     client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
 
     messages = [
-        {"role": "system", "content": "You are a helpful assistant. Use tools when needed. Only use get_transcript if a URL is provided."},
+        {"role": "system", "content": "You are a helpful assistant. When a tool returns a result, always use that result to answer — never say you could not retrieve it. Only call get_transcript if a YouTube URL is provided."},
         {"role": "user",   "content": (f"URL: {url}\n\n" if url.strip() else "") + query},
     ]
     result_cache = {}
