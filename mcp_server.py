@@ -16,8 +16,8 @@ def get_transcript(url: str) -> str:
     proxy_url = os.environ.get("PROXY_URL")
     proxies   = {"http": proxy_url, "https": proxy_url} if proxy_url else None
 
-    api = YouTubeTranscriptApi(proxies=proxies)
-    return " ".join(s.text for s in api.fetch(vid))
+    api = YouTubeTranscriptApi()
+    return " ".join(s.text for s in api.fetch(vid, proxies=proxies))
 
 @mcp.tool()
 def calculate(expression: str) -> str:
