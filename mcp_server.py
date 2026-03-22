@@ -1,5 +1,6 @@
 from mcp.server.fastmcp import FastMCP
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.proxies import GenericProxyConfig
 import requests, re, os
 
 mcp = FastMCP("tools")
@@ -14,10 +15,10 @@ def get_transcript(url: str) -> str:
     # Sign up at webshare.io (free tier) and add PROXY_URL to Railway Variables.
     # Format: http://username:password@proxy.webshare.io:80
     proxy_url = os.environ.get("PROXY_URL")
-    proxies   = {"http": proxy_url, "https": proxy_url} if proxy_url else None
+    proxy_config = GenericProxyConfig(proxy_url) if proxy_url else None
 
-    api = YouTubeTranscriptApi()
-    return " ".join(s.text for s in api.fetch(vid, proxies=proxies))
+    api = YouTubeTranscriptApi(proxy_config=proxy_config)
+    return " ".join(s.text for s in api.fetch(vid))
 
 @mcp.tool()
 def calculate(expression: str) -> str:
