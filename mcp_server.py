@@ -2,7 +2,7 @@ from mcp.server.fastmcp import FastMCP
 import requests, re, os
 
 mcp = FastMCP("tools")
-
+print(f"[ENV] SUPADATA_API_KEY present: {'SUPADATA_API_KEY' in os.environ}")
 @mcp.tool()
 def get_transcript(url: str) -> str:
     """Get YouTube video transcript via Supadata API (cloud-friendly)."""
