@@ -9,8 +9,6 @@ def get_transcript(url: str) -> str:
     # Supadata fetches YouTube transcripts server-side — no IP ban issues.
     # Get a free API key at supadata.ai and add SUPADATA_API_KEY to Railway Variables.
     key = os.environ.get("SUPADATA_API_KEY", "")
-    print(f"[SUPADATA] key present: {bool(key)}, key prefix: {key[:8] if key else 'EMPTY'}")
-
     resp = requests.get(
         "https://api.supadata.ai/v1/youtube/transcript",
         params={"url": url, "text": True},
@@ -18,10 +16,16 @@ def get_transcript(url: str) -> str:
         timeout=15,
     )
     data = resp.json()
-    print(f"[SUPADATA] status={resp.status_code} response={data}")
     if not resp.ok or "content" not in data:
         return f"Transcript error: {data}"
-    return data["content"]
+    raw = data["content"]
+    # Supadata returns either a plain string or a list of {text, offset, duration} dicts
+    if isinstance(raw, list):
+        text = " ".join(item["text"].replace("
+", " ") for item in raw)
+    else:
+        text = raw
+    return text[:6000]
 
 @mcp.tool()
 def calculate(expression: str) -> str:
