@@ -15,8 +15,9 @@ def get_transcript(url: str) -> str:
         timeout=15,
     )
     data = resp.json()
+    print(f"[SUPADATA] status={resp.status_code} response={data}")  # debug
     if not resp.ok or "content" not in data:
-        return f"Could not fetch transcript: {data.get('error', resp.status_code)}"
+        return f"Transcript error: {data}"
     return data["content"]
 
 @mcp.tool()
