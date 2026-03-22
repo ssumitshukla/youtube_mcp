@@ -51,11 +51,11 @@ SCHEMAS = [
 ]
 
 def run(url, query):
-    api_key = os.environ.get("OPENROUTER_API_KEY")
+    api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        return "Error: OPENROUTER_API_KEY not set."
+        return "Error: OPENAI_API_KEY not set."
 
-    client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
+    client = OpenAI(api_key=api_key)
 
     messages = [
         {"role": "system", "content": "You are a helpful assistant. When a tool returns a result, always use that result to answer. Only call get_transcript if a YouTube URL is provided."},
@@ -64,7 +64,7 @@ def run(url, query):
 
     while True:
         msg = client.chat.completions.create(
-            model="openai/gpt-4o-mini",
+            model="gpt-4o-mini",
             messages=messages,
             tools=SCHEMAS,
             tool_choice="auto",
