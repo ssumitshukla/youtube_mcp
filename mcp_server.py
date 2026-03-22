@@ -9,7 +9,7 @@ def get_transcript(url: str) -> str:
     # Supadata fetches YouTube transcripts server-side — no IP ban issues.
     # Get a free API key at supadata.ai and add SUPADATA_API_KEY to Railway Variables.
     resp = requests.get(
-        "https://api.supadata.ai/v1/youtube/transcript",
+        "https://api.supadata.ai/v1",
         params={"url": url, "text": True},
         headers={"x-api-key": os.environ.get("SUPADATA_API_KEY", "")},
         timeout=15,
